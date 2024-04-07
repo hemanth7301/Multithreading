@@ -6,9 +6,9 @@ public class Main {
         Incrementingthread incrementingthread = new Incrementingthread(inventoryCounter);
         Decrementingthread decrementingthread = new Decrementingthread(inventoryCounter);
         incrementingthread.start();
-        // incrementingthread.join();
         decrementingthread.start();
-        // decrementingthread.join();
+        incrementingthread.join();
+        decrementingthread.join();
         System.out.println("We currently have " + inventoryCounter.getItems() + " items");
     }
 
@@ -41,18 +41,26 @@ public class Main {
     }
 
     private static class InventoryCounter {
-        private int item = 0;
+        private int items = 0;
+
+        Object lock = new Object();
 
         public void increment() {
-            item++;
+            synchronized (this.lock) {
+                items++;
+            }
         }
 
         public void decrement() {
-            item--;
+            synchronized (this.lock) {
+                items--;
+            }
         }
 
         public int getItems() {
-            return item;
+            synchronized (this.lock) {
+                return items;
+            }
         }
     }
 }
